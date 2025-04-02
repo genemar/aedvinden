@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>AED Vinder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+    
+    header {
+      background-color: red;
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    AED Locaties in Assen (Postcode 9408)
+  </header>
+</head>
+ 
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+
+const greenIcon = new L.Icon({
+    iconUrl: 'aed_green.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  });
+
+  const redIcon = new L.Icon({
+    iconUrl: 'aed_red.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  });
+
+  // Dummy AED data (normaal via API)
+  const dummyAEDs = [
+  { "id": 1, "name": "Parkeerplaats Kloosterveen", "lat": 52.99625186028062, "lng": 6.520177884989409, "available": true, "address": "Kloosterveen 1" },
+  { "id": 2, "name": "Supermarkt Lidl", "lat": 53.00060701876003, "lng": 6.514796409401333, "available": true, "address": "Winkelcentrum Kloosterveste 10" },
+  { "id": 3, "name": "IKC Kloosterveen", "lat": 53.004672615033435, "lng": 6.506437513446864, "available": true, "address": "Kloosterweg 5" },
+  { "id": 4, "name": "Sporthal Kloosterveste", "lat": 53.000369959623185, "lng": 6.51361543313791, "available": true, "address": "Sportlaan 12" },
+  { "id": 7, "name": "Tankstation Shell", "lat": 52.992075331300306, "lng": 6.51710657349608, "available": true, "address": "Benzinestraat 15" },
+
+  { "id": 9, "name": "Fysiotherapie Kloosterveen", "lat": 52.99909749442191,  "lng": 6.511340897502587, "available": true, "address": "Therapiestraat 9" },
+
+  { "id": 11, "name": "Blauwbandkade AED", "lat": 52.99706029329685, "lng": 6.507079987735394, "available": true, "address": "Blauwbandkade 11" }, 
+
+   
+];
+
+  // Locatie gebruiker ophalen
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+
+      // Kaart initialiseren
+      const map = L.map('map').setView([userLat, userLng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+      // Marker voor gebruiker
+      L.marker([userLat, userLng])
+        .addTo(map)
+        .bindPopup("Jouw locatie")
+        .openPopup();
+
+      // AED's tonen (alleen beschikbare)
+      // AED's tonen
+      dummyAEDs.forEach(aed => {
+        const icon = aed.available ? greenIcon : redIcon;
+
+        L.marker([aed.lat, aed.lng], { icon })
+          .addTo(map)
+          .bindPopup(`<strong>${aed.name}</strong><br>${aed.address}<br>Status: ${aed.available ? "Beschikbaar" : "Niet beschikbaar"}`);
+      });
+
+
+    },
+    function(error) {
+      alert("Locatie kon niet worden opgehaald. Zorg dat je toestemming geeft.");
+    }
+  );
+</script>
+
+</body>
+</html>
